@@ -1,0 +1,74 @@
+---
+title: "Hospital Data"
+output: 
+  flexdashboard::flex_dashboard:
+  orientation: rows
+  social: menu
+  source_code: embed
+  vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(plotly)
+library(statebins)
+library(DT)
+library(knitr)
+```
+
+Row {.tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+###Northeast
+```{r northeast}
+mydata<-read.csv("https://github.com/erikedmonds/R-Dashboard/blob/master/readmission.csv", stringsAsFactors = FALSE)
+mydata.northeast<-subset(mydata, ProviderState=="CT"|ProviderState=="ME"|ProviderState=="MA"|ProviderState=="NH"|ProviderState=="RI"|ProviderState=="VT"|ProviderState=="NJ"|ProviderState=="NY"|ProviderState=="PA")
+ne<-mydata.northeast
+neplot<-plot_ly(ne, x=~TotalReadmissions,color=~ProviderState,type="box")
+neplot
+```
+
+###Midwest
+```{r midwest}
+mydata.midwest<-subset(mydata, ProviderState=="IL"|ProviderState=="IN"|ProviderState=="MI"|ProviderState=="NE"|ProviderState=="OH"|ProviderState=="WI"|ProviderState=="IA"|ProviderState=="KS"|ProviderState=="MN"|ProviderState=="MO"|ProviderState=="ND"|ProviderState=="SD")
+mw<-mydata.midwest
+mwplot<-plot_ly(mw, x=~TotalReadmissions,color=~ProviderState,type="box")
+mwplot
+```
+
+###South
+``` {r south}
+mydata.south<-subset(mydata,ProviderState=="DE"|ProviderState=="DC"|ProviderState=="FL"|ProviderState=="GA"|ProviderState=="MD"|ProviderState=="NC"|ProviderState=="SC"|ProviderState=="VA"|ProviderState=="WV"|ProviderState=="AL"|ProviderState=="KY"|ProviderState=="MS"|ProviderState=="TN"|ProviderState=="AR"|ProviderState=="LA"|ProviderState=="OK"|ProviderState=="TX")
+so<-mydata.south
+soplot<-plot_ly(so, x=~TotalReadmissions,color=~ProviderState,type="box")
+soplot
+```
+
+###West
+``` {r west}
+mydata.west<-subset(mydata, ProviderState=="AZ"|ProviderState=="AK"|ProviderState=="CA"|ProviderState=="CO"|ProviderState=="HI"|ProviderState=="ID"|ProviderState=="MT"|ProviderState=="NV"|ProviderState=="NM"|ProviderState=="UT"|ProviderState=="WA"|ProviderState=="WY")
+we<-mydata.west
+weplot<-plot_ly(we, x=~TotalReadmissions,color=~ProviderState,type="box")
+weplot
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Interactive Dataset
+
+```{r datatable}
+myDT<-datatable(mydata)
+myDT
+```
+
+### Relative US Readmissions
+
+```{r choropleth}
+gg <- statebins(mydata, "ProviderState", "TotalReadmissions", legend_position="bottom", 
+                breaks=5, labels=c("121+","120-91","90-61","60-31","<30"), legend_title="Hospital Readmission Trends",
+                font_size=5, brewer_pal="Reds", text_color="black",
+                plot_title="Hospital Readmission Rates By State, Upper Quartile", title_position="top")
+gg
+```
+
